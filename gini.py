@@ -18,20 +18,21 @@ class OrBi():
         
     def r_par(self,cols):    
 #         display(self.df.loc[:,cols])
-        print('Columns')
         display(self.df.style.applymap(self._bg_map,
                                subset=pd.IndexSlice[:,cols]))
         
+        mat_pat,index, counts = np.unique(self.mat[:,cols],axis=0,return_index=1, return_counts=1)
+#         print(mat_pat,index,counts)
+
+        display(pd.DataFrame(mat_pat, index=[counts,index]))
+        print(np.power(2,np.sum(mat_pat,axis=1)))
+
         
-        mat_pat, index_row, counts = np.unique(self.mat[:,cols],axis=0,return_index=1, return_counts=1)
-        print(mat_pat,index_row,counts)
-        print(f'Partitions of columns on row')
-        display(pd.DataFrame(mat_pat, index=[counts,index_row]))
-        
+
         
         gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
         gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), 
-                            np.sum(mat_pat,axis=1)/mat_pat.shape[1])
+                            np.power(2,np.sum(mat_pat,axis=1)))
         print(f'For row partitions on cols of{cols}:\n\n \
                 gini : {gini}\n   \
               gini_m : {gini_m}           ')
@@ -44,17 +45,17 @@ class OrBi():
         display(self.df.style.applymap(self._bg_map,
                                subset=pd.IndexSlice[rows,:]))
         
-        print(f'Partitions of rows on columns')
-
-        mat_pat,index_col, counts = np.unique(self.mat[rows,:],axis=1,return_index=1, return_counts=1)
-        print(mat_pat,index_col,counts)
-
-        display(pd.DataFrame(mat_pat, columns=[counts,index_col]))
         
+        mat_pat,index, counts = np.unique(self.mat[rows,:],axis=1,return_index=1, return_counts=1)
+        
+
+        print(mat_pat,index,counts)
+        display(pd.DataFrame(mat_pat, columns=[counts,index]))
+        print(np.power(2,np.sum(mat_pat,axis=0)))
         
         gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
         gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), 
-                            np.sum(mat_pat,axis=0)/mat_pat.shape[0])
+                            np.power(2, np.sum(mat_pat,axis=0)))
         print(f'For column partitions on cols of{rows}:\n\n \
                 gini : {gini}\n   \
               gini_m : {gini_m}           ')
