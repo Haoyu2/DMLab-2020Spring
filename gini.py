@@ -23,10 +23,10 @@ class OrBi():
                                subset=pd.IndexSlice[:,cols]))
         
         
-        mat_pat,index, counts = np.unique(self.mat[:,cols],axis=0,return_index=1, return_counts=1)
-#         print(mat_pat,index,counts)
+        mat_pat, index_row, counts = np.unique(self.mat[:,cols],axis=0,return_index=1, return_counts=1)
+        print(mat_pat,index_row,counts)
         print(f'Partitions of columns on row')
-        display(pd.DataFrame(mat_pat, index=[counts,index]))
+        display(pd.DataFrame(mat_pat, index=[counts,index_row]))
         
         
         gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
@@ -46,8 +46,10 @@ class OrBi():
         
         print(f'Partitions of rows on columns')
 
-        mat_pat,index, counts = np.unique(self.mat[rows,:],axis=1,return_index=1, return_counts=1)
-        display(pd.DataFrame(mat_pat, columns=[counts,index]))
+        mat_pat,index_col, counts = np.unique(self.mat[rows,:],axis=1,return_index=1, return_counts=1)
+        print(mat_pat,index_col,counts)
+
+        display(pd.DataFrame(mat_pat, columns=[counts,index_col]))
         
         
         gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
