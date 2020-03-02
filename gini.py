@@ -18,14 +18,14 @@ class OrBi():
         
     def r_par(self,cols):    
 #         display(self.df.loc[:,cols])
-        display(self.df.style.applymap(self._bg_map,
-                               subset=pd.IndexSlice[:,cols]))
+#         display(self.df.style.applymap(self._bg_map,
+#                                subset=pd.IndexSlice[:,cols]))
         
         mat_pat,index, counts = np.unique(self.mat[:,cols],axis=0,return_index=1, return_counts=1)
 #         print(mat_pat,index,counts)
 
-        display(pd.DataFrame(mat_pat, index=[counts,index]))
-        print(np.power(2,np.sum(mat_pat,axis=1)))
+#         display(pd.DataFrame(mat_pat, index=[counts,index]))
+#         print(np.power(2,np.sum(mat_pat,axis=1)))
 
         
 
@@ -33,45 +33,77 @@ class OrBi():
         gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
         gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), 
                             np.power(2,np.sum(mat_pat,axis=1)))
-        print(f'For row partitions on cols of{cols}:\n\n \
-                gini : {gini}\n   \
-              gini_m : {gini_m}           ')
+#         print(f'For row partitions on cols of{cols}:\n\n \
+#                 gini : {gini}\n   \
+#               gini_m : {gini_m}           ')
         return gini, gini_m
         
         
         
     def c_par(self,rows):    
 #         display(self.df.loc[:,rows])
-        display(self.df.style.applymap(self._bg_map,
-                               subset=pd.IndexSlice[rows,:]))
+#         display(self.df.style.applymap(self._bg_map,
+#                                subset=pd.IndexSlice[rows,:]))
         
         
         mat_pat,index, counts = np.unique(self.mat[rows,:],axis=1,return_index=1, return_counts=1)
         
 
-        print(mat_pat,index,counts)
-        display(pd.DataFrame(mat_pat, columns=[counts,index]))
-        print(np.power(2,np.sum(mat_pat,axis=0)))
+#         print(mat_pat,index,counts)
+#         display(pd.DataFrame(mat_pat, columns=[counts,index]))
+#         print(np.power(2,np.sum(mat_pat,axis=0)))
         
         gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
         gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), 
                             np.power(2, np.sum(mat_pat,axis=0)))
-        print(f'For column partitions on cols of{rows}:\n\n \
-                gini : {gini}\n   \
-              gini_m : {gini_m}           ')
+#         print(f'For column partitions on rows of{rows}:\n\n \
+#                 gini : {gini}\n   \
+#               gini_m : {gini_m}           ')
         return gini, gini_m
         
     def proj(self, row, cols):
         
-        print(f'Projections of columns {cols} on row {row}')
+#         print(f'Projections of columns {cols} on row {row}')
         return self.df.style.applymap(self._bg_map,
                                subset=pd.IndexSlice[row,cols])
     def rstr(self, col, rows):
         
-        print(f'Restriction of rows {rows} on column {col}')        
+#         print(f'Restriction of rows {rows} on column {col}')        
         return self.df.style.applymap(self._bg_map,
                                subset=pd.IndexSlice[rows,col])
     
         
     def _bg_map(self,val, color='yellow'):
         return f'background-color: {color}'
+    
+    def _powerset(self,iterable):
+        "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+        from itertools import chain,combinations
+
+        s = list(iterable)
+        return list(chain.from_iterable(combinations(s, r) for r in range(len(s)+1)))[1:]
+    def _allBi(self):
+        
+        s_r = list(self._powerset( range(self.mat.shape[0])))
+        s_c = list(self._powerset( range(self.mat.shape[1])))
+        
+        from itertools import product
+        
+        return product(s_r,s_c)
+    
+    def allBi_giniu(self):
+        
+        all_bi = list(self._allBi())
+        df_giniu_all = pd.DataFrame()
+#         print(all_bi)
+        gini_u_all = [self.gini_mu(i[0],i[1]) for i in all_bi]
+        return pd.DataFrame(gini_u_all,index=all_bi,columns=['Gini_u'])
+    def show_bi(self,rows,cols):
+        return self.df.style.applymap(self._bg_map,
+                               subset=pd.IndexSlice[rows,cols])
+        
+
+    
+    
+    
+    
