@@ -10,13 +10,13 @@ class OrBi():
         self.df = pd.DataFrame(mat)  
         
         
-    def gini_mu(self, rows,cols):
-        _, r_mu = self.r_par(cols)
-        _, c_mu = self.c_par(rows)
+    def gini_mu(self, rows,cols, mode=1,base=2.0):
+        _, r_mu = self.r_par(cols,mode=mode,base=base)
+        _, c_mu = self.c_par(rows,mode=mode,base=base)
         return r_mu+c_mu-r_mu*c_mu
         
         
-    def r_par(self,cols):    
+    def r_par(self,cols, mode=0,base=2.0):    
 #         display(self.df.loc[:,cols])
 #         display(self.df.style.applymap(self._bg_map,
 #                                subset=pd.IndexSlice[:,cols]))
@@ -30,9 +30,13 @@ class OrBi():
         
 
         
-        gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
-        gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), 
-                            np.power(2,np.sum(mat_pat,axis=1)))
+        gini = 1 - np.sum(np.square(counts/np.sum(counts)))
+        
+        if (mode==0):
+            pen = np.power(base,np.sum(mat_pat,axis=1))
+        if (mode==1):
+            pen = np.power(base,2 * np.sum(mat_pat,axis=1) - mat_pat.shape[1])
+        gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), pen)
 #         print(f'For row partitions on cols of{cols}:\n\n \
 #                 gini : {gini}\n   \
 #               gini_m : {gini_m}           ')
@@ -40,7 +44,7 @@ class OrBi():
         
         
         
-    def c_par(self,rows):    
+    def c_par(self,rows,mode=0,base=2.0):    
 #         display(self.df.loc[:,rows])
 #         display(self.df.style.applymap(self._bg_map,
 #                                subset=pd.IndexSlice[rows,:]))
@@ -53,9 +57,14 @@ class OrBi():
 #         display(pd.DataFrame(mat_pat, columns=[counts,index]))
 #         print(np.power(2,np.sum(mat_pat,axis=0)))
         
-        gini = 1 - np.sum(np.square(counts/np.sum(counts)))        
-        gini_m = 1 - np.dot(np.square(counts/np.sum(counts)), 
-                            np.power(2, np.sum(mat_pat,axis=0)))
+        gini = 1 - np.sum(np.square(counts/np.sum(counts))) 
+        if (mode==0):
+            pen = np.power(base,np.sum(mat_pat,axis=0))
+        if (mode==1):
+            pen = np.power(base,2 * np.sum(mat_pat,axis=0) - mat_pat.shape[0])
+        
+        
+        gini_m = 1 - np.dot(np.square(counts/np.sum(counts)),pen)
 #         print(f'For column partitions on rows of{rows}:\n\n \
 #                 gini : {gini}\n   \
 #               gini_m : {gini_m}           ')
@@ -91,12 +100,12 @@ class OrBi():
         
         return product(s_r,s_c)
     
-    def allBi_giniu(self):
+    def allBi_giniu(self, mode=1,base=2.0):
         
         all_bi = list(self._allBi())
         df_giniu_all = pd.DataFrame()
 #         print(all_bi)
-        gini_u_all = [self.gini_mu(i[0],i[1]) for i in all_bi]
+        gini_u_all = [self.gini_mu(i[0],i[1],mode=mode,base=base) for i in all_bi]
         return pd.DataFrame(gini_u_all,index=all_bi,columns=['Gini_u'])
     def show_bi(self,rows,cols):
         return self.df.style.applymap(self._bg_map,
