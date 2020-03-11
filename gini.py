@@ -108,6 +108,7 @@ class OrBi():
 		zero_one = []
 		
 		gini_u_ratio = []
+		one_ratio = []
 		for bi in all_bi:
 #             bi_str1 = [''.join(str(d)) for d in bi]
 #             bi_str = ','.join(bi_str1)
@@ -117,19 +118,16 @@ class OrBi():
 			ones = np.sum(bic)
 
 			zero_one.append((bic.size-ones,ones,bic.size))
-
-
-							   
-		
-#         all_bi_strs = [''.join(tup) for tup in all_bi]
-# df_giniu_all = pd.DataFrame()
-#         print(all_bi)
+			one_ratio.append(float(ones)/bic.size)
+       
 		gini_u_all = [self.gini_mu(i[0],i[1],mode=mode,base=base) for i in all_bi]
 		gini_u_ratio = [g*ii[1]/ii[2] for g,ii in zip(gini_u_all, zero_one)]
 
-		self.df_gini_all = pd.DataFrame(gini_u_all,index=list(self.all_bi_str.keys()),columns=['Gini_u'])
+		self.df_gini_all = pd.DataFrame(gini_u_all,index=all_bi,columns=['Gini_u'])
 		self.df_gini_all['Zeros_Ones'] = zero_one
-		self.df_gini_all['Gini_u_ratio'] = gini_u_ratio
+		self.df_gini_all['One_ratio'] = one_ratio
+
+		# self.df_gini_all['Gini_u_ratio'] = gini_u_ratio
 
 		return self.df_gini_all
 	def show_bi(self,rows,cols):

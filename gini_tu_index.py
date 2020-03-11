@@ -103,11 +103,21 @@ class OrBi():
     def allBi_giniu(self, mode=1,base=2.0):
         
         all_bi = list(self._allBi())
+        zero_one = []
+        for bi in all_bi:
+            bic = self.mat[list(bi[0])][:,list(bi[1])]
+            ones = np.sum(bic)
+            zero_one.append((bic.size-ones,ones,bic.size))
+
+
         
-        df_giniu_all = pd.DataFrame()
-#         print(all_bi)
         gini_u_all = [self.gini_mu(i[0],i[1],mode=mode,base=base) for i in all_bi]
-        return pd.DataFrame(gini_u_all,index=all_bi,columns=['Gini_u'])
+        gini_u_ratio = [g*ii[1]/ii[2] for g,ii in zip(gini_u_all, zero_one)]
+        df_giniu_all = pd.DataFrame(gini_u_all,index=all_bi,columns=['Gini_u'])
+        self.df_gini_all['Zeros_Ones'] = zero_one
+        self.df_gini_all['Gini_u_ratio'] = gini_u_ratio
+
+        return df_giniu_all 
     def show_bi(self,rows,cols):
         return self.df.style.applymap(self._bg_map,
                                subset=pd.IndexSlice[rows,cols])
